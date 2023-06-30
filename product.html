@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="css/amazeui.min.css" />
+		<link rel="stylesheet" href="css/admin.css" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	</head>
+	<body>
+		<div class="admin-content-body">
+      <div class="am-cf am-padding am-padding-bottom-0">
+        <div class="am-fl am-cf">
+          <strong class="am-text-primary am-text-lg">PC单机大作推荐</strong> 
+        </div>
+      </div>
+
+      <hr>
+      <ul id="list" class="am-avg-sm-2 am-avg-md-4 am-avg-lg-6 am-margin gallery-list"></ul>
+    </div>
+	</body>
+</html>
+<script>
+  $(document).ready(function() {
+    // 使用AJAX获取数据
+    $.ajax({
+      url: "http://127.0.0.1:8080/game/list", // 接口URL
+      type: "GET",
+      dataType: "json",
+      success: function(response) {
+        var list = response.data; // 假设接口返回的数据存储在data字段中，是一个数组
+        var listElement = $("#list");
+        for (var i = 0; i < list.length; i++) {
+          var item = list[i];
+          var listItem = $("<li>");
+          var link = $("<a>").attr("href", "info.html?gameId="+item.game_id);
+          var imageDiv = $("<div>");
+          var image = $("<img>")
+            .addClass("am-img-thumbnail am-img-bdrs")
+            .attr("src", item.image)
+            .attr("alt", item.game_name)
+            .css({ width: "3000px", height: "165px" }); // 设置图片大小为1920x1080
+          imageDiv.append(image);
+          var titleDiv = $("<div>")
+            .addClass("gallery-title")
+            .text(item.game_name);
+          link.append(imageDiv, titleDiv);
+          listItem.append(link);
+          listElement.append(listItem);
+        }
+      }
+    });
+  });
+</script>
+
