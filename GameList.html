@@ -46,32 +46,12 @@
 							</tbody>
 						</table>
 						<div class="am-cf">
-							共 15 条记录
-							<div class="am-fr">
-								<ul class="am-pagination">
-									<li class="am-disabled">
-										<a href="#">«</a>
-									</li>
-									<li class="am-active">
-										<a href="#">1</a>
-									</li>
-									<li>
-										<a href="#">2</a>
-									</li>
-									<li>
-										<a href="#">3</a>
-									</li>
-									<li>
-										<a href="#">4</a>
-									</li>
-									<li>
-										<a href="#">5</a>
-									</li>
-									<li>
-										<a href="#">»</a>
-									</li>
-								</ul>
-							</div>
+						      共 15 条记录
+						      <div class="am-fr">
+						        <ul class="am-pagination">
+						          
+						        </ul>
+						      </div>
 						</div>
 						<hr>
 					</form>
@@ -94,13 +74,17 @@
       $.ajax({
         url: searchURL,
         type: "GET",
+		data:{"page":1,"limit":10},
         dataType: "json",
         success: function(response) {
           var list = response.data; // 假设接口返回的数据存储在data字段中，是一个数组
-        
-          // 清空表格内容
-          tbody.empty();
-        
+          var count = response.extra.count; // 获取总记录数
+          var currentPage = response.extra.page; // 获取当前页码
+          var pagination = $(".am-pagination"); // 获取分页ul元素
+         
+           // 清空表格内容
+           tbody.empty();
+		   
           // 循环处理数据
           for (var i = 0; i < list.length; i++) {
             var game = list[i];
@@ -124,11 +108,67 @@
             var blankRow = $("<tr></tr>").css("height", "10px"); // 创建空白行元素并设置高度为10px
             tbody.append(blankRow);
           }
-
+			// 生成分页项
+            generatePagination(count, currentPage);
         }
       });
     }
-  
+	
+	function generatePagination(count, currentPage) {
+	  var pagination = $(".am-pagination");
+	  pagination.empty(); // 清空分页项
+	
+	  var pageCount = Math.ceil(count / 10); // 根据总记录数计算总页数
+	
+	  // 创建前一页分页项并添加样式和点击事件处理程序
+	  var prevLi = $("<li></li>");
+	  var prevLink = $("<a></a>").attr("href", "#").text("«").addClass("page-link");
+	  prevLi.append(prevLink);
+	  pagination.append(prevLi);
+	  prevLink.on("click", function() {
+	    var page = currentPage - 1; // 前一页页码
+	    if (page >= 1) {
+	      var searchValue = $(".am-form-field").val(); // 获取输入框的值
+	      var searchURL = getGameListURL() + "/game/list?gameName=" + encodeURIComponent(searchValue) + "&page=" + page; // 构建请求URL，将搜索值和页码作为参数
+	      sendRequest(searchURL); // 发起请求
+	    }
+	  });
+	
+	  for (var i = 1; i <= pageCount; i++) {
+	    var li = $("<li></li>"); // 创建 <li> 元素
+	    var a = $("<a></a>").attr("href", "#").text(i).addClass("page-link"); // 创建 <a> 元素，并添加 href 和文本内容
+	
+	    if (i === currentPage) {
+	      li.addClass("am-active"); // 当前页添加 active 类
+	    }
+	
+	    li.append(a); // 将 <a> 元素添加到 <li> 元素
+	    pagination.append(li); // 将 <li> 元素添加到分页的 <ul> 元素
+	
+	    // 为分页项的 <a> 元素添加点击事件处理程序
+	    a.on("click", function() {
+	      var page = parseInt($(this).text()); // 获取点击的页码
+	      var searchValue = $(".am-form-field").val(); // 获取输入框的值
+	      var searchURL = getGameListURL() + "/game/list?gameName=" + encodeURIComponent(searchValue) + "&page=" + page; // 构建请求URL，将搜索值和页码作为参数
+	      sendRequest(searchURL); // 发起请求
+	    });
+	  }
+	
+	  // 创建后一页分页项并添加样式和点击事件处理程序
+	  var nextLi = $("<li></li>");
+	  var nextLink = $("<a></a>").attr("href", "#").text("»").addClass("page-link");
+	  nextLi.append(nextLink);
+	  pagination.append(nextLi);
+	  nextLink.on("click", function() {
+	    var page = currentPage + 1; // 后一页页码
+	    if (page <= pageCount) {
+	      var searchValue = $(".am-form-field").val(); // 获取输入框的值
+	      var searchURL = getGameListURL() + "/game/list?gameName=" + encodeURIComponent(searchValue) + "&page=" + page; // 构建请求URL，将搜索值和页码作为参数
+	      sendRequest(searchURL); // 发起请求
+	    }
+	  });
+	}
+
     // 搜索按钮点击事件处理程序
     searchButton.on("click", function() {
       var searchValue = searchInput.val(); // 获取输入框的值
