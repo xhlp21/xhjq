@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="css/amazeui.min.css" />
+		<link rel="stylesheet" href="css/admin.css" />
+		<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+		<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+		<script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	</head>
+	<body>
+		<div class="admin-content-body">
+			<div class="am-cf am-padding am-padding-bottom-0">
+				<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">PC所有资源共享</strong><small></small></div>
+			</div>
+			<hr>
+			<div class="am-g">
+				<div class="am-u-sm-12 am-u-md-3">
+				</div>
+				<div class="am-u-sm-12 am-u-md-3">
+					<div class="am-input-group am-input-group-sm">
+						<input type="text" class="am-form-field">
+						<span class="am-input-group-btn">
+            <button class="am-btn am-btn-default" type="button">搜索</button>
+          </span>
+					</div>
+				</div>
+			</div>
+			<div class="am-g">
+				<div class="am-u-sm-12">
+					<form class="am-form">
+						<table class="am-table am-table-hover table-main">
+							<thead>
+								<tr>
+									<th class="table-title">名称</th>
+									<th class="table-title">图片</th>
+									<th class="table-type">类型</th>
+									<th class="table-author am-hide-sm-only">作者</th>
+									<th class="table-date am-hide-sm-only">上传日期</th>
+								</tr>
+							</thead>
+							<tbody>
+							
+							</tbody>
+						</table>
+						<div class="am-cf">
+							共 15 条记录
+							<div class="am-fr">
+								<ul class="am-pagination">
+									<li class="am-disabled">
+										<a href="#">«</a>
+									</li>
+									<li class="am-active">
+										<a href="#">1</a>
+									</li>
+									<li>
+										<a href="#">2</a>
+									</li>
+									<li>
+										<a href="#">3</a>
+									</li>
+									<li>
+										<a href="#">4</a>
+									</li>
+									<li>
+										<a href="#">5</a>
+									</li>
+									<li>
+										<a href="#">»</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<hr>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="function.js"></script>
+<script>
+  $(document).ready(function() {
+    var url = getGameListURL();
+    var searchInput = $(".am-form-field");
+    var searchButton = $(".am-btn-default");
+    var tbody = $(".table-main tbody"); // 获取表格的tbody元素
+  
+    // 发起请求函数
+    function sendRequest(searchURL) {
+      $.ajax({
+        url: searchURL,
+        type: "GET",
+        dataType: "json",
+        success: function(response) {
+          var list = response.data; // 假设接口返回的数据存储在data字段中，是一个数组
+        
+          // 清空表格内容
+          tbody.empty();
+        
+          // 循环处理数据
+          for (var i = 0; i < list.length; i++) {
+            var game = list[i];
+            var row = $("<tr></tr>"); // 创建新的行元素
+          
+            // 创建单元格元素并设置内容
+            var nameCell = $("<td></td>").html("<a href='#'>" + game.game_name + "</a>");
+            var imageCell = $("<td></td>");
+            var imageElement = $("<img>").attr("src", game.image).css({ width: "200px", height: "100px" });
+            var typeCell = $("<td></td>").text(game.type_name);
+            var authorCell = $("<td></td>").text(game.name);
+            var dateCell = $("<td></td>").text(game.time);
+          
+            // 将单元格元素添加到行元素中
+            row.append(nameCell, imageElement, typeCell, authorCell, dateCell);
+          
+            // 将行元素添加到表格的tbody中
+            tbody.append(row);
+          
+            // 插入空白行
+            var blankRow = $("<tr></tr>").css("height", "10px"); // 创建空白行元素并设置高度为10px
+            tbody.append(blankRow);
+          }
+
+        }
+      });
+    }
+  
+    // 搜索按钮点击事件处理程序
+    searchButton.on("click", function() {
+      var searchValue = searchInput.val(); // 获取输入框的值
+    
+      // 构建请求URL，将搜索值作为参数
+      var searchURL = url + "/game/list?gameName=" + encodeURIComponent(searchValue);
+      
+      // 发起请求
+      sendRequest(searchURL);
+    });
+  
+    // 默认发起请求
+    var defaultURL = url + "/game/list";
+    sendRequest(defaultURL);
+  });
+</script>
+

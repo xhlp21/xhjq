@@ -5,7 +5,6 @@
 		<title></title>
 		<link rel="stylesheet" href="css/amazeui.min.css" />
 		<link rel="stylesheet" href="css/admin.css" />
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	</head>
 	<body>
 		<div class="admin-content-body">
@@ -20,11 +19,14 @@
     </div>
 	</body>
 </html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="function.js"></script>
 <script>
+  var url = getGameListURL();
   $(document).ready(function() {
     // 使用AJAX获取数据
     $.ajax({
-      url: "http://127.0.0.1:8080/game/list", // 接口URL
+	  url: url + "/game/list/recommend",
       type: "GET",
       dataType: "json",
       success: function(response) {
