@@ -1,127 +1,69 @@
 <!DOCTYPE html>
 <html>
- 
 <head>
-    <meta charset="UTF-8">
-    <title>下拉搜索</title>
-    <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
-    <style>
-        .iput {
-            height: 25px;
-            width: 200px;
-            padding-left: 5px;
-        }
- 
-        .iop {
-            height: 25px;
-            margin-left: 5px;
-        }
- 
-        .iop:hover {
-            background-color: #1E90FF;
-        }
- 
-        .op-list {
-            border: solid 1px #767676;
-            width: 209px;
-            height: 125px;
-            overflow-y: auto;
-        }
- 
-        ::-webkit-scrollbar {
-            /*隐藏滚轮*/
-            display: none;
-        }
- 
-        .hidden {
-            display: none;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quick Start - Layui</title>
+  <link href="//cdn.staticfile.org/layui/2.8.10/css/layui.css" rel="stylesheet">
+  <script src="//cdn.staticfile.org/layui/2.8.10/layui.js"></script>
 </head>
- 
 <body>
-    <div><input class="iput" placeholder="魂类游戏" onclick="showOption()" oninput="search(this.value)"
-            onporpertychange="search(this.value)" onchange="search(this.value)"></div>
-    <div class="op-list hidden">
-        <div class="iop">--请选择--</div>
-        <div class="iop">测试1</div>
-        <div class="iop">测试2</div>
-        <div class="iop">测试3</div>
-        <div class="iop">测试4</div>
-        <div class="iop">测试5</div>
-        <div class="iop">测试6</div>
-        <div class="iop">测试7</div>
-        <div class="iop">测试8</div>
-        <div class="iop">测试9</div>
-    </div>
-	<div><input class="iput" placeholder="恐怖游戏" onclick="showOption()" oninput="search(this.value)"
-	        onporpertychange="search(this.value)" onchange="search(this.value)"></div>
-	<div class="op-list hidden">
-	    <div class="iop">--请选择--</div>
-	    <div class="iop">测试1</div>
-	    <div class="iop">测试2</div>
-	    <div class="iop">测试3</div>
-	    <div class="iop">测试4</div>
-	    <div class="iop">测试5</div>
-	    <div class="iop">测试6</div>
-	    <div class="iop">测试7</div>
-	    <div class="iop">测试8</div>
-	    <div class="iop">测试9</div>
-	</div>
-	<div><input class="iput" placeholder="射击" onclick="showOption()" oninput="search(this.value)"
-	        onporpertychange="search(this.value)" onchange="search(this.value)"></div>
-	<div class="op-list hidden">
-	    <div class="iop">--请选择--</div>
-	    <div class="iop">测试1</div>
-	    <div class="iop">测试2</div>
-	    <div class="iop">测试3</div>
-	    <div class="iop">测试4</div>
-	    <div class="iop">测试5</div>
-	    <div class="iop">测试6</div>
-	    <div class="iop">测试7</div>
-	    <div class="iop">测试8</div>
-	    <div class="iop">测试9</div>
-	</div>
-	<div><input class="iput" placeholder="上升难度" onclick="showOption()" oninput="search(this.value)"
-	        onporpertychange="search(this.value)" onchange="search(this.value)"></div>
-	<div class="op-list hidden">
-	    <div class="iop">--请选择--</div>
-	    <div class="iop">测试1</div>
-	    <div class="iop">测试2</div>
-	    <div class="iop">测试3</div>
-	    <div class="iop">测试4</div>
-	    <div class="iop">测试5</div>
-	    <div class="iop">测试6</div>
-	    <div class="iop">测试7</div>
-	    <div class="iop">测试8</div>
-	    <div class="iop">测试9</div>
-	</div>
-    <script>
-        function showOption() {
-            $('.op-list').toggleClass('hidden');
-            $('.iop').show();
+  <div id="toolbarContainer" class="layui-form toolbar" style="padding-left:35px;padding-top:35px;float: left;"></div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="function.js"></script>
+  <script>
+    var url = getGameListURL();
+  
+    $(document).ready(function() {
+      // 发送 Ajax 请求获取数据，并渲染下拉列表
+      $.ajax({
+        url: url + "/type/list",
+        type: "GET",
+        dataType: "json",
+        success: function(response) {
+          var data = response.data;
+          var toolbarContainer = $("#toolbarContainer");
+    
+          for (var i = 0; i < data.length; i++) {
+            var item = data[i];
+            var divElement = $("<div></div>").addClass("layui-form toolbar").css({"padding-left": "35px", "padding-top": "35px", "float": "left"});
+            var formItemElement = $("<div></div>").addClass("layui-form-item");
+            var inlineElement = $("<div></div>").addClass("layui-inline");
+            var selectElement = $("<select></select>").attr("name", "branchCompanyId").addClass("layui-select").attr("lay-search", true);
+    
+            var optionElement = $("<option></option>").attr("value", item.type_id).text(item.type_name);
+            selectElement.append(optionElement);
+            inlineElement.append(selectElement);
+            formItemElement.append(inlineElement);
+            divElement.append(formItemElement);
+            toolbarContainer.append(divElement);
+          }
+    
+          layui.form.render(); // 渲染 Layui 表单元素
+    
+          // 绑定事件处理程序
+          $("#select[name='branchCompanyId']").on("change", function() {
+            var selectedTypeId = $(this).val(); // 获取选中的 type_id
+            sendAjaxRequest(selectedTypeId); // 发送 Ajax 请求，传递选中的 type_id
+          });
         }
-        $(document).on('click', '.iop', function () {
-            $('.op-list').addClass('hidden');
-            var text = $(this).text();
-            $('.iput').val(text);
-        })
-        function search(value) {
-            $('.iop').show();
-            $('.iop').each(function () {
-                var text = $(this).text();
-                if (text.indexOf(value) == -1) {
-                    $(this).hide();
-                }
-            });
+      });
+    });
+    
+    function sendAjaxRequest(typeId) {
+      $.ajax({
+        url: url + "/type/game",
+        type: "GET",
+        data: { type_id: typeId },
+        success: function(response) {
+          console.log(response);
+        },
+        error: function(xhr, status, error) {
+          console.error(error);
         }
-        $(document).click(function (e) {
-            if ('iput' != e.target.className) {
-                $('.op-list').addClass('hidden');
-            }
-        });
- 
-    </script>
+      });
+    }
+  </script>
 </body>
- 
 </html>
