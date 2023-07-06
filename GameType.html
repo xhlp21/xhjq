@@ -5,51 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Quick Start - Layui</title>
   <link href="//cdn.staticfile.org/layui/2.8.10/css/layui.css" rel="stylesheet">
+  <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script src="//cdn.staticfile.org/layui/2.8.10/layui.js"></script>
 </head>
 <body>
   <div id="toolbarContainer" class="layui-form toolbar" style="padding-left:35px;padding-top:35px;float: left;"></div>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="function.js"></script>
   <script>
     var url = getGameListURL();
-  
-    $(document).ready(function() {
-      // 发送 Ajax 请求获取数据，并渲染下拉列表
-      $.ajax({
-        url: url + "/type/list",
-        type: "GET",
-        dataType: "json",
-        success: function(response) {
-          var data = response.data;
-          var toolbarContainer = $("#toolbarContainer");
     
-          for (var i = 0; i < data.length; i++) {
-            var item = data[i];
-            var divElement = $("<div></div>").addClass("layui-form toolbar").css({"padding-left": "35px", "padding-top": "35px", "float": "left"});
-            var formItemElement = $("<div></div>").addClass("layui-form-item");
-            var inlineElement = $("<div></div>").addClass("layui-inline");
-            var selectElement = $("<select></select>").attr("name", "branchCompanyId").addClass("layui-select").attr("lay-search", true);
+        layui.use(['form'], function() {
+          var form = layui.form;
     
-            var optionElement = $("<option></option>").attr("value", item.type_id).text(item.type_name);
-            selectElement.append(optionElement);
-            inlineElement.append(selectElement);
-            formItemElement.append(inlineElement);
-            divElement.append(formItemElement);
-            toolbarContainer.append(divElement);
-          }
+          $(document).ready(function() {
+            // 发送 Ajax 请求获取数据，并渲染下拉列表
+            $.ajax({
+              url: url + "/type/list",
+              type: "GET",
+              dataType: "json",
+              success: function(response) {
+                var data = response.data;
+                var toolbarContainer = $("#toolbarContainer");
     
-          layui.form.render(); // 渲染 Layui 表单元素
+                for (var i = 0; i < data.length; i++) {
+                  var item = data[i];
+                  var divElement = $("<div></div>").addClass("layui-form toolbar").css({"padding-left": "35px", "padding-top": "35px", "float": "left"});
+                  var formItemElement = $("<div></div>").addClass("layui-form-item");
+                  var inlineElement = $("<div></div>").addClass("layui-inline");
+                  var selectElement = $("<select></select>").attr("name", "branchCompanyId").addClass("layui-select").attr("lay-search", true);
     
-          // 绑定事件处理程序
-          $("#select[name='branchCompanyId']").on("change", function() {
-            var selectedTypeId = $(this).val(); // 获取选中的 type_id
-            sendAjaxRequest(selectedTypeId); // 发送 Ajax 请求，传递选中的 type_id
+                  var optionElement = $("<option></option>").attr("value", item.type_id).text(item.type_name);
+                  selectElement.append(optionElement);
+                  inlineElement.append(selectElement);
+                  formItemElement.append(inlineElement);
+                  divElement.append(formItemElement);
+                  toolbarContainer.append(divElement);
+                }
+    
+                form.render(); // 渲染 Layui 表单元素
+    
+                // 绑定事件处理程序
+                $("#toolbarContainer select[name='branchCompanyId']").on("change", function() {
+                  console.log(1123)
+                  var selectedTypeId = $(this).val(); // 获取选中的 type_id
+                  sendAjaxRequest(selectedTypeId); // 发送 Ajax 请求，传递选中的 type_id
+                });
+    
+              }
+            });
           });
-        }
-      });
-    });
+        });
     
     function sendAjaxRequest(typeId) {
       $.ajax({
