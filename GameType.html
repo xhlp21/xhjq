@@ -86,25 +86,26 @@
       
             // 清空原有的内容
             listElement.empty();
-      
-            for (var i = 0; i < list.length; i++) {
-              var item = list[i];
-              var listItem = $("<li>");
-              var link = $("<a>").attr("href", "info.html?gameId="+item.game_id);
-              var imageDiv = $("<div>");
-              var image = $("<img>")
-                .addClass("am-img-thumbnail am-img-bdrs")
-                .attr("src", item.image)
-                .attr("alt", item.game_name)
-                .css({ width: "3000px", height: "165px" }); 
-              imageDiv.append(image);
-              var titleDiv = $("<div>")
-                .addClass("gallery-title")
-                .text(item.game_name);
-              link.append(imageDiv, titleDiv);
-              listItem.append(link);
-              listElement.append(listItem);
-            }
+			if(list !== null){
+				for (var i = 0; i < list.length; i++) {
+				  var item = list[i];
+				  var listItem = $("<li>");
+				  var link = $("<a>").attr("href", "info.html?gameId="+item.game_id);
+				  var imageDiv = $("<div>");
+				  var image = $("<img>")
+				    .addClass("am-img-thumbnail am-img-bdrs")
+				    .attr("src", item.image)
+				    .attr("alt", item.game_name)
+				    .css({ width: "3000px", height: "165px" }); 
+				  imageDiv.append(image);
+				  var titleDiv = $("<div>")
+				    .addClass("gallery-title")
+				    .text(item.game_name);
+				  link.append(imageDiv, titleDiv);
+				  listItem.append(link);
+				  listElement.append(listItem);
+				}
+			}
           }
         });
       }
