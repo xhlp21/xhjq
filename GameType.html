@@ -3,74 +3,112 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Quick Start - Layui</title>
-  <link href="//cdn.staticfile.org/layui/2.8.10/css/layui.css" rel="stylesheet">
+  <link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+  <!-- 引入 layui.js -->
+  <script src="//unpkg.com/layui@2.6.8/dist/layui.js"></script>
   <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
   <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
-  <script src="//cdn.staticfile.org/layui/2.8.10/layui.js"></script>
+  <link rel="stylesheet" href="css/amazeui.min.css" />
+  <link rel="stylesheet" href="css/admin.css" />
 </head>
 <body>
-  <div id="toolbarContainer" class="layui-form toolbar" style="padding-left:35px;padding-top:35px;float: left;"></div>
+  <form class="layui-form" action="">
+    <div class="layui-form-item" style="margin-top: 35px;margin-left: 25px;">
+      <div id="checkboxContainer"></div>
+    </div>
+  </form>
+  <div class="admin-content-body">
+    <div class="am-cf am-padding am-padding-bottom-0">
+      <div class="am-fl am-cf">
+        <strong class="am-text-primary am-text-lg" style="margin-left: 8px;">筛选规格分区</strong> 
+      </div>
+    </div>
+  
+    <hr>
+    <ul id="list" class="am-avg-sm-2 am-avg-md-4 am-avg-lg-6 am-margin gallery-list"></ul>
+  </div>
+
   <script src="function.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>
     var url = getGameListURL();
-    
-        layui.use(['form'], function() {
-          var form = layui.form;
-    
-          $(document).ready(function() {
-            // 发送 Ajax 请求获取数据，并渲染下拉列表
-            $.ajax({
-              url: url + "/type/list",
-              type: "GET",
-              dataType: "json",
-              success: function(response) {
-                var data = response.data;
-                var toolbarContainer = $("#toolbarContainer");
-    
-                for (var i = 0; i < data.length; i++) {
-                  var item = data[i];
-                  var divElement = $("<div></div>").addClass("layui-form toolbar").css({"padding-left": "35px", "padding-top": "35px", "float": "left"});
-                  var formItemElement = $("<div></div>").addClass("layui-form-item");
-                  var inlineElement = $("<div></div>").addClass("layui-inline");
-                  var selectElement = $("<select></select>").attr("name", "branchCompanyId").addClass("layui-select").attr("lay-search", true);
-    
-                  var optionElement = $("<option></option>").attr("value", item.type_id).text(item.type_name);
-                  selectElement.append(optionElement);
-                  inlineElement.append(selectElement);
-                  formItemElement.append(inlineElement);
-                  divElement.append(formItemElement);
-                  toolbarContainer.append(divElement);
-                }
-    
-                form.render(); // 渲染 Layui 表单元素
-    
-                // 绑定事件处理程序
-                $("#toolbarContainer select[name='branchCompanyId']").on("change", function() {
-                  console.log(1123)
-                  var selectedTypeId = $(this).val(); // 获取选中的 type_id
-                  sendAjaxRequest(selectedTypeId); // 发送 Ajax 请求，传递选中的 type_id
-                });
-    
+
+    layui.use(['form'], function() {
+      var form = layui.form;
+
+      $(document).ready(function() {
+        // 发送 Ajax 请求获取数据，并渲染下拉列表
+        $.ajax({
+          url: url + "/type/list",
+          type: "GET",
+          dataType: "json",
+          success: function(response) {
+            if (response.error == 0) {
+              var data = response.data;
+              var checkboxContainer = $("#checkboxContainer");
+
+              for (var i = 0; i < data.length; i++) {
+                var item = data[i];
+                var checkboxElement = $("<input>").attr("type", "checkbox").attr("name", "like[type_id][]").attr("title", item.type_name).attr("value", item.type_id);
+                checkboxContainer.append(checkboxElement);
               }
-            });
-          });
+
+              form.render('checkbox'); // 渲染 Layui 复选框元素
+
+              // 绑定事件处理程序
+              form.on('checkbox', function(data) {
+                var selectedIds = []; // 选中的id数组
+
+                // 遍历所有选中的复选框，获取id值
+                checkboxContainer.find('input[type="checkbox"]:checked').each(function() {
+                  selectedIds.push($(this).val());
+                });
+
+                // 在此处可以进行后续操作，如发送Ajax请求等
+                sendAjaxRequest(selectedIds); // 发送Ajax请求并处理响应
+              });
+            }
+          }
         });
-    
-    function sendAjaxRequest(typeId) {
-      $.ajax({
-        url: url + "/type/game",
-        type: "GET",
-        data: { type_id: typeId },
-        success: function(response) {
-          console.log(response);
-        },
-        error: function(xhr, status, error) {
-          console.error(error);
-        }
       });
-    }
+
+      function sendAjaxRequest(ids) {
+        var typeIdsString = ids.join(","); // 将选中的id数组拼接为字符串，使用逗号分隔
+        $.ajax({
+          url: url + "/type/game",
+          type: "GET",
+          data: { type_id: typeIdsString },
+          dataType: "json",
+          success: function(response) {
+            var list = response.data; // 假设接口返回的数据存储在data字段中，是一个数组
+            var listElement = $("#list");
+      
+            // 清空原有的内容
+            listElement.empty();
+      
+            for (var i = 0; i < list.length; i++) {
+              var item = list[i];
+              var listItem = $("<li>");
+              var link = $("<a>").attr("href", "info.html?gameId="+item.game_id);
+              var imageDiv = $("<div>");
+              var image = $("<img>")
+                .addClass("am-img-thumbnail am-img-bdrs")
+                .attr("src", item.image)
+                .attr("alt", item.game_name)
+                .css({ width: "3000px", height: "165px" }); 
+              imageDiv.append(image);
+              var titleDiv = $("<div>")
+                .addClass("gallery-title")
+                .text(item.game_name);
+              link.append(imageDiv, titleDiv);
+              listItem.append(link);
+              listElement.append(listItem);
+            }
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>
