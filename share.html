@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="UTF-8">
+	  <title></title>
+	  <link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+	  <!-- 引入 layui.js -->
+	  <script src="//unpkg.com/layui@2.6.8/dist/layui.js"></script>
+	  <link rel="stylesheet" href="css/amazeui.min.css" />
+	  <link rel="stylesheet" href="css/admin.css" />
+	  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+	  <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	  <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+	  <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	</head>
+	<body>
+		<div class="admin-content-body">
+      <div class="am-cf am-padding am-padding-bottom-0">
+        <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">资源共享</strong><small></small></div>
+      </div>
+      <hr>
+	   
+	  <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+	    <ul class="layui-tab-title">
+	      <li class="layui-this">资源分享</li>
+	      <li>网站链接分享</li>
+	    </ul>
+	    <div class="layui-tab-content" style="height: 100px;">
+	      <div class="layui-tab-item layui-show">
+			  <form class="layui-form"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+			    <div class="layui-form-item">
+			      <label class="layui-form-label">名称</label>
+			      <div class="layui-input-block">
+			        <input type="text" name="game_name" placeholder="请输入" autocomplete="off" class="layui-input">
+			      </div>
+			    </div>
+			    <div class="layui-form-item">
+			      <label class="layui-form-label">类型</label>
+			      <div class="layui-input-block">
+			        <div id="checkboxContainer"></div>
+			      </div>
+			    </div>
+				<div class="layui-form-item">
+				  <label class="layui-form-label">封面</label>
+				  <div class="layui-input-block">
+				    <div class="layui-upload">
+				      <button type="button" class="layui-btn" id="test1">上传图片</button>
+				      <div class="layui-upload-list">
+				        <img class="layui-upload-img" id="demo1">
+				        <p id="demoText"></p>
+				      </div>
+				      <div style="width: 95px;">
+				        <div class="layui-progress layui-progress-big" lay-showpercent="yes" lay-filter="demo">
+				          <div class="layui-progress-bar" lay-percent=""></div>
+				        </div>
+				      </div>
+				    </div>   
+				    <a name="list-progress"> </a>
+				    <div style="margin-top: 10px;">	      
+				    </div>
+				  </div>
+				</div>
+				<div class="layui-form-item">
+				  <label class="layui-form-label">种子文件</label>
+				  <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+				    <ul class="layui-tab-title">
+				      <li class="layui-this">上传文件</li>
+				      <li>磁力链接</li>
+				    </ul>
+				    <div class="layui-tab-content" style="height: 100px;">
+				      <div class="layui-tab-item layui-show">
+						  <div class="layui-input-block">
+						    <button type="button" class="layui-bt" id="test2"><i class="layui-icon"></i>上传文件</button>
+						  </div>
+					  </div>
+				      <div class="layui-tab-item">
+						  <div class="layui-form-item layui-form-text">
+						      <div class="layui-input-block">
+						        <textarea name="magnet_url" placeholder="例如: magnet:?xt=urn:btih:0A2113B717D6AC6EF954E011159F97BEBAF1578F" class="layui-textarea"></textarea>
+						      </div>
+						    </div>
+					  </div>
+				    </div>
+				  </div> 		  
+				</div>
+			    <div class="layui-form-item">
+			      <div class="layui-input-block">
+			        <button class="layui-btn" lay-submit lay-filter="submitGame">立即提交</button>
+			        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			      </div>
+			    </div>
+			  </form>
+		  </div>
+	      <div class="layui-tab-item">
+			  <form class="layui-form"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+			    <div class="layui-form-item">
+			      <label class="layui-form-label">网站名称</label>
+			      <div class="layui-input-block">
+			        <input type="text" name="website_name" placeholder="请输入" autocomplete="off" class="layui-input">
+			      </div>
+			    <div class="layui-form-item">
+					<div class="layui-form-item">
+					  <label class="layui-form-label">网站链接</label>
+					  <div class="layui-input-block">
+					    <input type="text" name="website_url" placeholder="请输入" autocomplete="off" class="layui-input">
+					  </div>
+					<div class="layui-form-item">
+			      <div class="layui-input-block">
+			        <button class="layui-btn" lay-submit lay-filter="submitWebsite">立即提交</button>
+			        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			      </div>
+			    </div>
+			  </form>
+		  </div>
+	    </div>
+	  </div> 
+	</body>
+</html>
+<script src="function.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+	var url = getGameListURL();
+	layui.use(['upload', 'element', 'layer'], function(){
+	  var $ = layui.jquery
+	  ,upload = layui.upload
+	  ,element = layui.element
+	  ,layer = layui.layer;
+	   
+	  //执行实例
+	  var uploadInst = upload.render({
+	      elem: '#test1'
+	      ,url: url + '/oss/files' //上传接口
+	      ,before: function(obj){
+	        //预读本地文件示例，不支持ie8
+	        obj.preview(function(index, file, result){
+	          $('#demo1').attr('src', result); //图片链接（base64）
+	        });
+	        element.progress('demo', '0%'); //进度条复位
+	        layer.msg('上传中', {icon: 16, time: 0});
+	      }
+	      ,done: function(res){
+	        //如果上传失败
+	        if(res.code > 0){
+	          return layer.msg('上传失败');
+	        }
+	        //上传成功的一些操作
+	        $('#demoText').html(''); //置空上传失败的状态
+	      }
+	      ,error: function(){
+	        //演示失败状态，并实现重传
+	        var demoText = $('#demoText');
+	        demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+	        demoText.find('.demo-reload').on('click', function(){
+	          uploadInst.upload();
+	        });
+	      }
+	      //进度条
+	      ,progress: function(n, elem, e){
+	        element.progress('demo', n + '%'); //可配合 layui 进度条元素使用
+	        if(n == 100){
+	          layer.msg('上传完毕', {icon: 1});
+	        }
+	      }
+	    });
+	
+	  //执行实例
+	  var uploadInst = upload.render({
+		elem: '#test2' 
+		,url: url + '/oss/files'//上传接口
+		,accept: 'file'
+		,done: function(res){
+		  if(res.code == 0){
+		  	  layer.msg('文件上传成功', {icon: 1, time: 2000}); // 弹出成功
+		  }
+		  else{
+		  	  layer.msg('文件上传失败', {icon: 2, time: 2000}); // 弹出成功
+		  }
+		}
+		,error: function(){
+		  layer.msg('文件上传异常', {icon: 2, time: 2000});
+		}
+	  });
+	  
+	});
+	var form = layui.form;
+	$(document).ready(function() {
+			  
+	  // 发送 Ajax 请求获取数据，并渲染下拉列表
+	  $.ajax({
+	    url: url + "/type/list",
+	    type: "GET",
+	    dataType: "json",
+	    success: function(response) {
+	      if (response.error == 0) {
+	        var data = response.data;
+	        var checkboxContainer = $("#checkboxContainer");
+		
+	        for (var i = 0; i < data.length; i++) {
+	          var item = data[i];
+	          var checkboxElement = $("<input>").attr("type", "checkbox").attr("name", "like[type_id][]").attr("title", item.type_name).attr("value", item.type_id);
+	          checkboxContainer.append(checkboxElement);
+	        }
+	        form.render('checkbox'); // 渲染 Layui 复选框元素
+	      }
+	    }
+	  });
+	  
+	  layui.use(['form'], function() {
+	    var form = layui.form;
+	    	  
+	      // 监听表单提交
+	      form.on('submit(submitWebsite)', function(data) {
+	        var formData = data.field; // 获取表单数据
+	    	console.log(formData)
+	        // 发送Ajax请求
+	        // $.ajax({
+	        //   url: 'your_server_url_here',
+	        //   type: 'POST',
+	        //   data: formData,
+	        //   dataType: 'json',
+	        //   success: function(response) {
+	        //     if (response.success) {
+	        //       // 处理成功的情况
+	        //       alert('表单提交成功');
+	        //     } else {
+	        //       // 处理失败的情况
+	        //       alert('表单提交失败');
+	        //     }
+	        //   },
+	        //   error: function(xhr, status, error) {
+	        //     // 处理请求错误
+	        //     console.error(error);
+	        //   }
+	        // });
+	        // return false; // 阻止表单的默认提交行为
+	      });
+		  form.on('submit(submitGame)', function(data) {
+		    var formData = data.field; // 获取表单数据
+		  	    	console.log(formData)
+		    // 发送Ajax请求
+		    // $.ajax({
+		    //   url: 'your_server_url_here',
+		    //   type: 'POST',
+		    //   data: formData,
+		    //   dataType: 'json',
+		    //   success: function(response) {
+		    //     if (response.success) {
+		    //       // 处理成功的情况
+		    //       alert('表单提交成功');
+		    //     } else {
+		    //       // 处理失败的情况
+		    //       alert('表单提交失败');
+		    //     }
+		    //   },
+		    //   error: function(xhr, status, error) {
+		    //     // 处理请求错误
+		    //     console.error(error);
+		    //   }
+		    // });
+		    // return false; // 阻止表单的默认提交行为
+		  });
+	    });  
+	});
+</script>

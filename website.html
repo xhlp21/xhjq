@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html>
 
-	<head>
-		<meta charset="UTF-8">
-		<title></title>
-		<link rel="stylesheet" href="css/amazeui.min.css" />
-		<link rel="stylesheet" href="css/admin.css" />
-		<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
-		<script type="text/javascript" src="myplugs/js/plugs.js"></script>
-	</head>
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+  <!-- 引入 layui.js -->
+  <script src="//unpkg.com/layui@2.6.8/dist/layui.js"></script>
+  <link rel="stylesheet" href="css/amazeui.min.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
 	<body>
 		<div class="admin-content-body">
 			<div class="am-cf am-padding am-padding-bottom-0">
@@ -37,24 +42,19 @@
 							<thead>
 								<tr>
 									<th class="table-title">网站名称</th>
-									<th class="table-title">网站按钮</th>
 									<th class="table-title">上传者</th>
+									<th class="table-date am-hide-sm-only">上传日期</th>
 								</tr>
 							</thead>
-							<tbody>
-								<tr>
-									<td>1</td>
-									<td>
-										<a href="#">链接名称</a>
-									</td>
-									<td>www.baidu.com</td>
-								</tr>
-								
-
-							</tbody>
+							<tbody></tbody>
 						</table>
-						<hr>
-					</form>
+						<div class="am-cf">
+						    <div class="am-fr">
+						      <ul class="am-pagination"></ul>
+						    </div>
+						  </div>
+						  <hr>
+						</form>
 					<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
 						<div id="demo7" style="float: right;"></div>
 					</fieldset>
@@ -66,5 +66,76 @@
 <script src="//unpkg.com/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="function.js"></script>
 <script>
-	
-</script>
+    $(document).ready(function() {
+      var url = getGameListURL();
+      var searchInput = $(".am-form-field");
+      var searchButton = $(".am-btn-default");
+      var tbody = $(".table-main tbody");
+
+      // Function to send AJAX request and populate table
+      function sendRequest(searchURL) {
+        $.ajax({
+          url: searchURL,
+          type: "GET",
+          data: { "page": 1, "limit": 10 },
+          dataType: "json",
+          success: function(response) {
+            var list = response.data;
+            var pagination = $(".am-pagination");
+
+            tbody.empty();
+
+            for (var i = 0; i < list.length; i++) {
+              var website = list[i];
+              var row = $("<tr></tr>");
+              var nameCell = $("<td></td>").html("<a href='"+ website.website_url +"'>" + website.website_name + "</a>");
+              var authorCell = $("<td></td>").text(website.name);
+              var dateCell = $("<td></td>").text(website.time);
+              row.append(nameCell, authorCell, dateCell);
+
+              tbody.append(row);
+
+              var blankRow = $("<tr></tr>").css("height", "10px");
+              tbody.append(blankRow);
+            }
+
+            // Update pagination count and current page
+            updatePagination(response.extra.count, response.extra.page);
+          }
+        });
+      }
+
+      // Function to update pagination based on count and current page
+      function updatePagination(count, currentPage) {
+        layui.use(['laypage'], function() {
+          var laypage = layui.laypage;
+
+          laypage.render({
+            elem: 'demo7',
+            count: Math.ceil(count / 10),
+            curr: currentPage,
+            limit: 1,
+            layout: ['count', 'prev', 'page', 'next', 'limit', 'refresh', 'skip'],
+            jump: function(obj, first) {
+              if (!first) {
+                var currentPage = obj.curr;
+                var pageURL = url + "/website/list?page=" + currentPage;
+                sendRequest(pageURL);
+              }
+            }
+          });
+        });
+      }
+
+      // Event listener for search button
+      searchButton.on("click", function() {
+        var searchValue = searchInput.val();
+        var searchURL = url + "/website/list?websiteName=" + encodeURIComponent(searchValue);
+        sendRequest(searchURL);
+      });
+
+      // Initial request to fetch website list
+      var defaultURL = url + "/website/list";
+      sendRequest(defaultURL);
+    });
+  </script>
